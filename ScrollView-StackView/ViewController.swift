@@ -55,23 +55,44 @@ final class ViewController: UIViewController {
         
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
+        setupScrollView()
         setupStackView()
+        setupContentsViewConstraint()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
+    private func setupScrollView() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         
-        // scrollView.contentSize(stackViewのサイズ)がscrollView本体のサイズを超えたらスクロール
-        // stackView.width : scrollView.widthAnchorに合わせている
-        // stackView.width : stackViewの持つ高さ(itemViewの高さの合計 + spacing)
-        scrollView.frame = view.frame
-        scrollView.contentSize = CGSize(width: stackView.frame.size.width, height: stackView.frame.size.height)
-        
-        // StackViewの横幅はScrollViewに合わせる
+        // scrollViewのサイズは画面いっぱいにする
+        NSLayoutConstraint.activate([scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                                     scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                                     scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                                     scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)])
+    }
+    
+    private func setupStackView() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: 0).isActive = true
         
-        // 以下、コンテンツビューに高さを与える
+        let contentLayoutGuide = scrollView.contentLayoutGuide
+        let frameLayoutGuide = scrollView.frameLayoutGuide
+        
+        // stackView.widthはframeLayoutGuideに合わせる
+        // 四隅はそれぞれcontentLayoutGuideに合わせる
+        NSLayoutConstraint.activate([stackView.widthAnchor.constraint(equalTo: frameLayoutGuide.widthAnchor),
+                                     stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+                                     stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+                                     stackView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+                                     stackView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)])
+        
+        stackView.addArrangedSubview(itemView)
+        stackView.addArrangedSubview(itemView2)
+        stackView.addArrangedSubview(itemView3)
+        stackView.addArrangedSubview(itemView4)
+    }
+    
+    private func setupContentsViewConstraint() {
+        
+        // stackViewが持つコンテンツにそれぞれ高さの制約を与える
         itemView.translatesAutoresizingMaskIntoConstraints = false
         itemView.heightAnchor.constraint(equalToConstant: 300.0).isActive = true
         
@@ -83,13 +104,6 @@ final class ViewController: UIViewController {
         
         itemView4.translatesAutoresizingMaskIntoConstraints = false
         itemView4.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
-    }
-
-    private func setupStackView() {
-        stackView.addArrangedSubview(itemView)
-        stackView.addArrangedSubview(itemView2)
-        stackView.addArrangedSubview(itemView3)
-        stackView.addArrangedSubview(itemView4)
     }
     
 }
